@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 """
 BMI 260: Final Project
-Load segmentation for a chest CT scan from an xml format file.
+Load data for a chest CT scan from both dicom and radiologist xml files.
 """
 from collections import namedtuple
 import os
