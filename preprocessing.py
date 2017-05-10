@@ -24,7 +24,7 @@ def execute(dicom_folder, destination):
     Load the dicom images from the given folder and segment out the lungs.
     """
     # Load voxels
-    voxels, unit_cell = load_folder(dicom_folder)
+    voxels, origin, unit_cell = load_folder(dicom_folder)
 
     # Determine threshold
     threshold = skimage.filters.threshold_otsu(voxels[voxels != -3024])
@@ -71,6 +71,9 @@ def load_folder(dicom_folder):
     # Sort by instance number
     dicom_objects.sort(key=lambda x: x.InstanceNumber)
 
+    # Obtain slice SOP instance UIDs
+    sop_instance_uids = [dicom_object.SOPInstanceUID for dicom_object in dicom_objects]
+
     # Extract pixel arrays
     pixel_arrays = [dicom_object.pixel_array for dicom_object in dicom_objects]
 
@@ -96,7 +99,7 @@ def load_folder(dicom_folder):
     # Roll pixels into xyz coordinate system
     voxels = np.moveaxis(rescaled_pixels, 0, -1)
 
-    return voxels, unit_cell
+    return voxels, unit_cell, sop_instance_uids
 
 
 def get_single_value(values):
