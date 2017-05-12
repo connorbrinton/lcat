@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 """
 BMI 260: Final Project
-Load data for a chest CT scan from both dicom and radiologist xml files.
+Load chest CT scan annotations from radiologist xml files.
 """
 from collections import namedtuple
 import os
@@ -13,11 +13,6 @@ import skimage
 import skimage.measure
 import skimage.segmentation
 
-import preprocessing
-
-
-# Scan datatype
-Scan = namedtuple('Scan', ['voxels', 'nodules', 'unit_cell'])
 
 # Nodule datatype
 Nodule = namedtuple('Nodule', ['characteristics', 'mask'])
@@ -29,28 +24,6 @@ XMLNS = {
 
 # Tag name regex
 TAG_NAME_RE = re.compile('^{' + XMLNS['nih'] + '}' + '(.+)$')
-
-
-def load_scan_data(scan_folder):
-    """
-    Loads the CT scan as a 3d voxel array, then loads the segmentation in the given dicom_folder by
-    reading any xml files located in the folder and referencing dicom files as necessary. Returns a
-    3D mask with the same dimensions as the CT scan.
-
-    TODO: Combine nodules referring to the same entity. Unfortunately there is currently no unique
-    ID for each nodule, meaning that multiple radiologist reads result in multiple almost-identical
-    nodules in the scan metadata.
-    """
-    # Load the CT scan
-    voxels, unit_cell, sop_instance_uids = preprocessing.load_folder(scan_folder)
-
-    # Load all segmentations
-    nodules = load_radiologist_annotations(scan_folder, voxels.shape, sop_instance_uids)
-
-    # Convert to scan datatype
-    scan = Scan(voxels, nodules, unit_cell)
-
-    return scan
 
 
 def load_radiologist_annotations(dicom_folder, dimensions, sop_instance_uids):
@@ -180,7 +153,8 @@ def main():
     """
     Command-line invocation routine.
     """
-    scan = load_scan_data('./data/LIDC-IDRI/LIDC-IDRI-0068/1.3.6.1.4.1.14519.5.2.1.6279.6001.709632090821449989953075380168/1.3.6.1.4.1.14519.5.2.1.6279.6001.187108608022306504546286626125')
+    import scans
+    scan = scans.load_scan('../../data/LIDC-IDRI/LIDC-IDRI-0090')
 
     import IPython
     IPython.embed()
