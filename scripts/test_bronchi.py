@@ -45,7 +45,7 @@ def main():
     args = parser.parse_args()
 
     # Test bronchi segmentation code
-    test_bronchi_segmentation(args.scan_folder, args.destination_folder))
+    test_bronchi_segmentation(args.scan_folder, args.destination_folder)
 
 
 if __name__ == '__main__':

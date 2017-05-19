@@ -14,7 +14,7 @@ def get_bronchi_segmentation(scan, lung_segmentation):
 
     # Obtain threshold using Otsu's method
     # lung_threshold = skimage.filters.threshold_otsu(lung_voxels[lung_voxels != 0])
-    lung_threshold = np.mean(lung_voxels[lung_voxels != 0])
+    lung_threshold = np.median(lung_voxels[lung_voxels != 0])
 
     # Select non-air elements
     lung_tissue = lung_voxels > lung_threshold
