@@ -1,0 +1,4 @@
+numpy
+pydicom
+scikit-image
+scikit-fmm

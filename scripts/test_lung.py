@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 """
-Bronchi segmentation test harness.
+Lung segmentation test harness.
 """
 import argparse
 import os
@@ -12,7 +12,7 @@ DEFAULT_DATA_DIRECTORY = os.path.join(os.path.dirname(__file__), '../data/redata
 DESCRIPTION = "Test lcat-toolkit segmentation code."
 
 
-def test_bronchi_segmentation(scan_folder, destination_folder):
+def test_lung_segmentation(scan_folder, destination_folder):
     """
     Test bronchi segmentation
     """
@@ -22,11 +22,8 @@ def test_bronchi_segmentation(scan_folder, destination_folder):
     # Perform lung segmentation
     lung_segmentation = lcat.get_lung_segmentation(scan)
 
-    # Get bronchi segmentation
-    bronchi_segmentation = lcat.get_bronchi_segmentation(scan, lung_segmentation)
-
-    # Save slices
-    lcat.util.save_slices(bronchi_segmentation, destination_folder)
+    # Save segmentation to folder
+    lcat.util.save_slices(lung_segmentation, destination_folder)
 
 
 def main():
@@ -45,7 +42,7 @@ def main():
     args = parser.parse_args()
 
     # Test bronchi segmentation code
-    test_bronchi_segmentation(args.scan_folder, args.destination_folder))
+    test_lung_segmentation(args.scan_folder, args.destination_folder)
 
 
 if __name__ == '__main__':

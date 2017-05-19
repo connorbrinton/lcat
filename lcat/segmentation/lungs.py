@@ -6,6 +6,7 @@ import numpy as np
 import skimage
 import skimage.filters
 import skimage.measure
+import skimage.morphology
 import skimage.segmentation
 
 
@@ -33,7 +34,17 @@ def get_lung_segmentation(scan):
     # Identify the largest volume
     lung_mask = get_largest_volume(labels)
 
-    return lung_mask
+    # Fill edge holes by dilation
+    smoother = skimage.morphology.ball(10, dtype=bool)
+    lung_mask = skimage.morphology.binary_dilation(lung_mask, selem=smoother)
+
+    # Obtain lung envelope
+    envelope_mask = get_lung_envelope(lung_mask)
+
+    # Erode envelope to revert to proper extent
+    envelope_mask = skimage.morphology.binary_erosion(envelope_mask, selem=smoother)
+
+    return envelope_mask
 
 
 def get_largest_volume(labels):
@@ -54,3 +65,26 @@ def get_top_value(arr):
     top_value_index = np.argmax(counts)
 
     return values[top_value_index]
+
+
+def get_lung_envelope(lung_mask):
+    """
+    Given a mask representing thresholded lung values, obtain an envelope containing the lung region
+    with no interior holes.
+    """
+    # Invert the mask
+    reversed_mask = np.logical_not(lung_mask)
+
+    # Identify connected_components
+    reversed_labels = skimage.measure.label(reversed_mask)
+
+    # Identify inner labels only
+    inner_labels = skimage.segmentation.clear_border(reversed_labels)
+
+    # Obtain only the outermost (edge-touching) region
+    outside_mask = np.logical_xor(reversed_labels != 0, inner_labels != 0)
+
+    # Invert the mask again to get the envelope
+    envelope_mask = np.logical_not(outside_mask)
+
+    return envelope_mask
