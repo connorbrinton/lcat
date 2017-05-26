@@ -28,6 +28,9 @@ def load_folder(dicom_folder):
     # Sort by instance number
     dicom_objects.sort(key=lambda x: x.InstanceNumber)
 
+    # Get patient ID
+    patient_id = get_single_value(dicom_object.PatientID for dicom_object in dicom_objects)
+
     # Obtain slice SOP instance UIDs
     sop_instance_uids = [dicom_object.SOPInstanceUID for dicom_object in dicom_objects]
 
@@ -56,7 +59,7 @@ def load_folder(dicom_folder):
     # Roll pixels into xyz coordinate system
     voxels = np.moveaxis(rescaled_pixels, 0, -1)
 
-    return voxels, unit_cell, sop_instance_uids
+    return patient_id, voxels, unit_cell, sop_instance_uids
 
 
 def get_single_value(values):

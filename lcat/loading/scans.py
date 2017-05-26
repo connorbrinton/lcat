@@ -8,7 +8,7 @@ import lcat.loading.images
 
 
 # Scan datatype
-Scan = namedtuple('Scan', ['voxels', 'nodules', 'unit_cell'])
+Scan = namedtuple('Scan', ['patient_id', 'voxels', 'nodules', 'unit_cell'])
 
 
 def load_scan(scan_folder):
@@ -22,13 +22,13 @@ def load_scan(scan_folder):
     nodules in the scan metadata.
     """
     # Load the CT scan
-    voxels, unit_cell, sop_instance_uids = lcat.loading.images.load_folder(scan_folder)
+    patient_id, voxels, unit_cell, sop_instance_uids = lcat.loading.images.load_folder(scan_folder)
 
     # Load all segmentations
     nodules = lcat.loading.annotations.load_radiologist_annotations(scan_folder, voxels.shape,
                                                                     sop_instance_uids)
 
     # Convert to scan datatype
-    scan = Scan(voxels, nodules, unit_cell)
+    scan = Scan(patient_id, voxels, nodules, unit_cell)
 
     return scan

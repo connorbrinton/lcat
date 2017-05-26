@@ -11,13 +11,10 @@ import numpy as np
 import lcat
 
 # Load a patient's data
-patient = lcat.load_patient('data/LIDC-IDRI-0090')
+scan = lcat.load_scan('data/LIDC-IDRI-0090')
 
 # Print the patient ID
-print("Patient ID:", patient.patient_id)
-
-# Get scan reference
-scan = patient.scan
+print("Patient ID:", scan.patient_id)
 
 # Display a slice of the scan
 plt.imshow(scan.voxels[:, :, 30], interpolation='none')
