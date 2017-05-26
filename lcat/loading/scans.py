@@ -3,8 +3,8 @@ Load data for a chest CT scan from both dicom and radiologist xml files.
 """
 from collections import namedtuple
 
-import annotations
-import images
+import lcat.loading.annotations
+import lcat.loading.images
 
 
 # Scan datatype
@@ -22,10 +22,11 @@ def load_scan(scan_folder):
     nodules in the scan metadata.
     """
     # Load the CT scan
-    voxels, unit_cell, sop_instance_uids = images.load_folder(scan_folder)
+    voxels, unit_cell, sop_instance_uids = lcat.loading.images.load_folder(scan_folder)
 
     # Load all segmentations
-    nodules = annotations.load_radiologist_annotations(scan_folder, voxels.shape, sop_instance_uids)
+    nodules = lcat.loading.annotations.load_radiologist_annotations(scan_folder, voxels.shape,
+                                                                    sop_instance_uids)
 
     # Convert to scan datatype
     scan = Scan(voxels, nodules, unit_cell)

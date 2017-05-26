@@ -13,6 +13,7 @@ PACKAGE_DIR = {}
 PACKAGE_DATA = {}
 
 SCRIPTS = ['scripts/test_bronchi.py',
+           'scripts/test_loading.py',
            'scripts/test_lung.py']
 
 setup(name='lcat-toolkit',
