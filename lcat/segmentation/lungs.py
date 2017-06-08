@@ -9,6 +9,8 @@ import skimage.measure
 import skimage.morphology
 import skimage.segmentation
 
+import lcat
+
 
 def get_lung_segmentation(scan):
     """
@@ -20,7 +22,8 @@ def get_lung_segmentation(scan):
                                                  scan.voxels[:, [0, -1], :].flat)))
 
     # Determine threshold
-    threshold = skimage.filters.threshold_otsu(scan.voxels[scan.voxels != filler_value])
+    filler_mask = np.logical_not(np.isclose(scan.voxels, filler_value))
+    threshold = skimage.filters.threshold_otsu(scan.voxels[filler_mask])
 
     # Threshold the image
     foreground = scan.voxels >= threshold
@@ -29,20 +32,20 @@ def get_lung_segmentation(scan):
     labels = skimage.measure.label(foreground, background=1, connectivity=1)
 
     # Remove edge components
-    skimage.segmentation.clear_border(labels, in_place=True)
+    lcat.util.clear_border(labels, axis=[0, 1], in_place=True)
 
     # Identify the largest volume
     lung_mask = get_largest_volume(labels)
 
     # Fill edge holes by dilation
-    smoother = skimage.morphology.ball(10, dtype=bool)
-    lung_mask = skimage.morphology.binary_dilation(lung_mask, selem=smoother)
+    # smoother = skimage.morphology.ball(10, dtype=bool)
+    # lung_mask = skimage.morphology.binary_dilation(lung_mask, selem=smoother)
 
     # Obtain lung envelope
     envelope_mask = get_lung_envelope(lung_mask)
 
     # Erode envelope to revert to proper extent
-    envelope_mask = skimage.morphology.binary_erosion(envelope_mask, selem=smoother)
+    # envelope_mask = skimage.morphology.binary_erosion(envelope_mask, selem=smoother)
 
     return envelope_mask
 

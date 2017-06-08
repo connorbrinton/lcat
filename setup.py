@@ -5,6 +5,7 @@ Setup file for lcat-toolkit.
 from setuptools import setup
 
 PACKAGES = ['lcat',
+            'lcat.analysis',
             'lcat.loading',
             'lcat.segmentation']
 
@@ -14,7 +15,8 @@ PACKAGE_DATA = {}
 
 SCRIPTS = ['scripts/test_bronchi.py',
            'scripts/test_loading.py',
-           'scripts/test_lung.py']
+           'scripts/test_lung.py',
+           'scripts/featurize_distances.py']
 
 setup(name='lcat-toolkit',
       version='0.1.0',

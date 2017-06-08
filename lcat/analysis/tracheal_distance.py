@@ -8,19 +8,15 @@ import skfmm
 import skimage.morphology
 
 
-def get_bronchi_segmentation(scan, lung_segmentation):
-    # Obtain lung voxels
-    lung_voxels = scan.voxels * lung_segmentation
-
-    # Obtain threshold using Otsu's method
-    # lung_threshold = skimage.filters.threshold_otsu(lung_voxels[lung_voxels != 0])
-    lung_threshold = np.median(lung_voxels[lung_voxels != 0])
+def get_tracheal_distances(scan, lung_segmentation):
+    # Obtain median threshold
+    lung_threshold = np.median(scan.voxels[lung_segmentation])
 
     # Select non-air elements
-    lung_tissue = lung_voxels > lung_threshold
+    lung_tissue_mask = np.logical_and(lung_segmentation, scan.voxels > lung_threshold)
 
     # Compute boundaries affecting lung air
-    air_boundaries = np.logical_or(lung_tissue, np.logical_not(lung_segmentation))
+    air_boundaries = np.logical_or(lung_tissue_mask, np.logical_not(lung_segmentation))
 
     # Choose seed point
     # TODO: Choose seed point better (actually find trachea, don't assume top)
@@ -30,7 +26,11 @@ def get_bronchi_segmentation(scan, lung_segmentation):
     phi = np.ma.MaskedArray(seed_boundary, air_boundaries)
 
     # Perform fast marching problem
-    distances = skfmm.distance(phi)
+    try:
+        distances = skfmm.distance(phi)
+    except:
+        import IPython
+        IPython.embed()
 
     # TODO: Return something else?
     return distances
@@ -57,8 +57,10 @@ def get_seed_boundary(lung_segmentation):
     if trachea_index is None:
         raise Exception("No content in lung segmentation")
 
-    # Create zero contour across top of trachea
+    # Create same-size array of ones
     trachea_ceiling = np.ones(lung_segmentation.shape)
-    trachea_ceiling[..., :(trachea_index + 1)] = -1
+
+    # Set top of trachea as starting point
+    trachea_ceiling[lung_segmentation[..., trachea_index]] = 0
 
     return trachea_ceiling

@@ -13,9 +13,11 @@ import skimage
 import skimage.measure
 import skimage.segmentation
 
+import lcat
+
 
 # Nodule datatype
-Nodule = namedtuple('Nodule', ['characteristics', 'mask'])
+Nodule = namedtuple('Nodule', ['nodule_id', 'characteristics', 'origin', 'mask'])
 
 # XML namespace abbreviations
 XMLNS = {
@@ -51,7 +53,11 @@ def load_radiologist_annotations(dicom_folder, dimensions, sop_instance_uids):
             # For each read
             for read in reads:
                 # Extract nodule information
-                nodules.append(get_nodule_information(read, dimensions, sop_instance_uids))
+                nodule = get_nodule_information(read, dimensions, sop_instance_uids)
+
+                # Only include >3mm nodules
+                if any(dim > 1 for dim in nodule.mask.shape):
+                    nodules.append(nodule)
 
     return nodules
 
@@ -61,13 +67,24 @@ def get_nodule_information(read, dimensions, sop_instance_uids):
     Given an unblindedReadNodule element, create a Nodule object representing the nodule's
     characteristics and vertices.
     """
+    # Get nodule ID
+    nodule_id = get_read_nodule_id(read)
+
     # Get characteristics
     characteristics = get_read_characteristics(read)
 
     # Get mask
-    mask = get_read_mask(read, dimensions, sop_instance_uids)
+    origin, mask = get_read_mask(read, dimensions, sop_instance_uids)
 
-    return Nodule(characteristics, mask)
+    return Nodule(nodule_id, characteristics, origin, mask)
+
+
+def get_read_nodule_id(read):
+    # Find nodule ID element
+    nodule_id_elem = read.find('.//nih:noduleID', XMLNS)
+
+    # Return text content
+    return nodule_id_elem.text
 
 
 def get_read_characteristics(read):
@@ -93,7 +110,21 @@ def get_read_characteristics(read):
 
 def get_read_mask(read, dimensions, sop_instance_uids):
     """
-    Get the vertices from a specific read.
+    Get a 3D array representing the region described by the specific read, prefaced by an origin
+    specifying its placement in the image (in index coordinates).
+    """
+    # Get the full mask
+    mask = get_mask_region(read, dimensions, sop_instance_uids)
+
+    # Compress to small region with offset
+    origin, mask = lcat.util.compress_nodule_mask(mask)
+
+    return origin, mask
+
+
+def get_mask_region(read, dimensions, sop_instance_uids):
+    """
+    Returns a full representation of the region represented by the given nodule read as a mask.
     """
     # Create mask output placeholder
     mask = np.zeros(dimensions, dtype=bool)

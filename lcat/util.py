@@ -64,3 +64,109 @@ def save_slices(voxels, destination_folder, prefix="slice"):
     for z_index in range(voxels.shape[-1]):
         destination_filepath = os.path.join(destination_folder, filename_template % (z_index))
         scipy.misc.imsave(destination_filepath, voxels[..., z_index])
+
+def get_bounding_box(arr):
+    """
+    Given an array of values, returns an list of tuples, where each tuple represents the extent of
+    the non-zero values in `arr` along a particular axis.
+
+    Inspired by http://stackoverflow.com/questions/31400769/bounding-box-of-numpy-array
+    """
+    # Boundaries placeholder
+    boundaries = []
+
+    # For each axis
+    for axis in range(arr.ndim):
+        # Enumerate orthogonal axes
+        other_axes = tuple(other_axis for other_axis in range(arr.ndim) if other_axis != axis)
+
+        # Identify non-zero points
+        nonzero = np.any(arr, axis=other_axes)
+
+        # Identify non-zero region
+        extent = tuple(np.where(nonzero)[0][[0, -1]])
+
+        # Store boundary
+        boundaries.append(extent)
+
+    return boundaries
+
+
+def crop_to_box(arr, box):
+    """
+    Given an array `arr` and boundaries `boundaries` (such as is returned by `get_bounding_box`),
+    return `arr` cropped to `boundaries`.
+    """
+    # Calculate slices
+    slicer = tuple(slice(extent[0], extent[1] + 1) for extent in box)
+
+    # Perform slicing
+    return arr[slicer]
+
+
+def get_full_nodule_mask(nodule, scan_shape):
+    # Create full placeholder
+    mask = np.zeros(scan_shape, dtype=bool)
+
+    # Create slicer
+    slicer = tuple(slice(start, start + dim)
+                   for start, dim in zip(nodule.origin, nodule.mask.shape))
+
+    # Fill mask placeholder
+    mask[slicer] = nodule.mask
+
+    return mask
+
+
+def compress_nodule_mask(mask):
+    # Get bounding box
+    bounding_box = get_bounding_box(mask)
+
+    # Get origin from bounding box
+    origin = [start for start, end in bounding_box]
+
+    # Crop to bounding box
+    mask = crop_to_box(mask, bounding_box)
+
+    return origin, mask
+
+
+def clear_border(labels, axis=None, in_place=False):
+    """
+    Clears any labeled components touching either border along the given axes (in `axis`).
+    """
+    # Convert labels to ndarray
+    labels = np.asarray(labels)
+
+    # Provide default axis argument
+    if axis is None:
+        axis = list(range(labels.ndim))
+
+    # Make sure axis is 1d
+    axes = np.atleast_1d(axis)
+    assert axes.ndim == 1
+
+    # Initialize to-be-cleared list
+    touching = set()
+
+    # For each axis
+    for axis in axes.flat:
+        # Generate selector
+        selector = labels.ndim * [slice(None)]
+
+        # Check leading border
+        selector[axis] = 0
+        touching |= set(np.unique(labels[tuple(selector)]))
+
+        # Check trailing border
+        selector[axis] = -1
+        touching |= set(np.unique(labels[tuple(selector)]))
+
+    if not in_place:
+        labels = labels.copy()
+
+    # Set matching values to zero
+    for value in touching:
+        labels[labels == value] = 0
+
+    return labels

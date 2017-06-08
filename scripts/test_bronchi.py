@@ -23,10 +23,10 @@ def test_bronchi_segmentation(scan_folder, destination_folder):
     lung_segmentation = lcat.get_lung_segmentation(scan)
 
     # Get bronchi segmentation
-    bronchi_segmentation = lcat.get_bronchi_segmentation(scan, lung_segmentation)
+    tracheal_distances = lcat.get_tracheal_distances(scan, lung_segmentation)
 
     # Save slices
-    lcat.util.save_slices(bronchi_segmentation, destination_folder)
+    lcat.util.save_slices(tracheal_distances, destination_folder)
 
 
 def main():

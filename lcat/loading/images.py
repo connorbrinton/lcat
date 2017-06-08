@@ -50,9 +50,10 @@ def load_folder(dicom_folder):
     unit_cell = (x_spacing, y_spacing, z_spacing)
 
     # Rescale pixels
-    rescale_slopes = np.asarray([dicom_object.RescaleSlope for dicom_object in dicom_objects])
+    rescale_slopes = np.asarray([dicom_object.RescaleSlope for dicom_object in dicom_objects],
+                                dtype=np.float32)
     rescale_intercepts = np.asarray([dicom_object.RescaleIntercept
-                                     for dicom_object in dicom_objects])
+                                     for dicom_object in dicom_objects], dtype=np.float32)
     rescaled_pixels = rescale_slopes[:, np.newaxis, np.newaxis] * np.asarray(pixel_arrays) \
                         + rescale_intercepts[:, np.newaxis, np.newaxis]
 
