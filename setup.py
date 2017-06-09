@@ -16,7 +16,7 @@ PACKAGE_DATA = {}
 SCRIPTS = ['scripts/test_bronchi.py',
            'scripts/test_loading.py',
            'scripts/test_lung.py',
-           'scripts/featurize_distances.py']
+           'scripts/featurize.py']
 
 setup(name='lcat-toolkit',
       version='0.1.0',

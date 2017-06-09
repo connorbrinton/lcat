@@ -22,8 +22,12 @@ def get_lung_segmentation(scan):
                                                  scan.voxels[:, [0, -1], :].flat)))
 
     # Determine threshold
-    filler_mask = np.logical_not(np.isclose(scan.voxels, filler_value))
-    threshold = skimage.filters.threshold_otsu(scan.voxels[filler_mask])
+    scan_mask = np.logical_not(np.isclose(scan.voxels, filler_value))
+    threshold = skimage.filters.threshold_otsu(scan.voxels[scan_mask])
+
+    # Make sure threshold is within air/lung parameters
+    if threshold <= -1000 or threshold >= -700:
+        threshold = -850
 
     # Threshold the image
     foreground = scan.voxels >= threshold
@@ -38,14 +42,14 @@ def get_lung_segmentation(scan):
     lung_mask = get_largest_volume(labels)
 
     # Fill edge holes by dilation
-    # smoother = skimage.morphology.ball(10, dtype=bool)
-    # lung_mask = skimage.morphology.binary_dilation(lung_mask, selem=smoother)
+    smoother = skimage.morphology.ball(10, dtype=bool)
+    lung_mask = skimage.morphology.binary_dilation(lung_mask, selem=smoother)
 
     # Obtain lung envelope
     envelope_mask = get_lung_envelope(lung_mask)
 
     # Erode envelope to revert to proper extent
-    # envelope_mask = skimage.morphology.binary_erosion(envelope_mask, selem=smoother)
+    envelope_mask = skimage.morphology.binary_erosion(envelope_mask, selem=smoother)
 
     return envelope_mask
 

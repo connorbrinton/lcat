@@ -98,7 +98,7 @@ ENV/
 /site
 
 # Ignore data folder
-data/
+/data/
 
 # Ignore featurization folder
-featurization/
+/featurization/
