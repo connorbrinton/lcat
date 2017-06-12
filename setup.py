@@ -29,7 +29,7 @@ SCRIPTS = ['scripts/lcat-featurize.py',
 
 setup(name='lcat',
       packages=PACKAGES,
-      version='0.1.5',
+      version='0.1.6',
       description='Lung Cancer Action Team (LCAT) toolkit',
       author='LCAT Team',
       author_email='brinton@cs.stanford.edu',
