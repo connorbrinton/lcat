@@ -11,7 +11,11 @@ Contents:
 .. toctree::
    :maxdepth: 2
 
-
+   lcat
+   lcat.analysis
+   lcat.featurization
+   lcat.loading
+   lcat.segmentation
 
 Indices and tables
 ==================
@@ -19,4 +23,3 @@ Indices and tables
 * :ref:`genindex`
 * :ref:`modindex`
 * :ref:`search`
-
