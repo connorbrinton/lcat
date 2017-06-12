@@ -17,13 +17,15 @@ SCRIPTS = ['scripts/lcat-featurize.py',
            'scripts/lcat-visualize.py']
 
 setup(name='lcat',
+      packages=PACKAGES,
       version='0.1.0',
       description='Lung Cancer Action Team (LCAT) toolkit',
       author='LCAT Team',
-      author_email='lcat-toolkit@mail.stanford.edu',
+      author_email='brinton@cs.stanford.edu',
       url='https://github.com/connorbrinton/lcat',
+      download_url='https://github.com/connorbrinton/lcat/archive/0.1.0.tar.gz',
+      keywords=['CT', 'lung', 'biopsy'],
       license='GPL-3.0',
       package_data=PACKAGE_DATA,
       package_dir=PACKAGE_DIR,
-      packages=PACKAGES,
       scripts=SCRIPTS)
