@@ -9,6 +9,11 @@ import numpy as np
 
 
 def get_tracheal_distances(scan, lung_segmentation):
+    """
+    Calculate a distance map for every accessible voxel in the lung segmentation of the distance
+    from the top of the trachea to the voxel. Returns a masked numpy array representing the distance
+    assigned to each voxel.
+    """
     # Lazy-load skfmm
     try:
         import skfmm
