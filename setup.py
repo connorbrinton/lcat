@@ -4,6 +4,9 @@ Setup file for lcat-toolkit.
 """
 from setuptools import setup
 
+with open('requirements.txt', 'r') as source:
+    DEPENDENCIES = [line.strip() for line in source.readlines()]
+
 PACKAGES = ['lcat',
             'lcat.analysis',
             'lcat.loading',
@@ -28,4 +31,5 @@ setup(name='lcat',
       license='GPL-3.0',
       package_data=PACKAGE_DATA,
       package_dir=PACKAGE_DIR,
-      scripts=SCRIPTS)
+      scripts=SCRIPTS,
+      install_requires=DEPENDENCIES)
