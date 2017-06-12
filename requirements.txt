@@ -3,6 +3,5 @@ pandas
 Pillow
 pydicom
 scikit-image
-scikit-fmm
 scipy
 tqdm

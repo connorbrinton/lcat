@@ -4,11 +4,13 @@ BMI 260: Final Project
 Bronchi segmentation/identification
 """
 import numpy as np
-import skfmm
 import skimage.morphology
 
 
 def get_tracheal_distances(scan, lung_segmentation):
+    # Lazy-load skfmm
+    import skfmm
+
     # Obtain median threshold
     lung_threshold = np.median(scan.voxels[lung_segmentation])
 
