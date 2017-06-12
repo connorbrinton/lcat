@@ -4,8 +4,16 @@ Setup file for lcat-toolkit.
 """
 from setuptools import setup
 
-with open('requirements.txt', 'r') as source:
-    DEPENDENCIES = [line.strip() for line in source.readlines()]
+
+DEPENDENCIES = [
+    'numpy',
+    'pandas',
+    'Pillow',
+    'pydicom',
+    'scikit-image',
+    'scipy',
+    'tqdm'
+]
 
 PACKAGES = ['lcat',
             'lcat.analysis',
