@@ -3,13 +3,19 @@
 BMI 260: Final Project
 Bronchi segmentation/identification
 """
+import sys
+
 import numpy as np
-import skimage.morphology
 
 
 def get_tracheal_distances(scan, lung_segmentation):
     # Lazy-load skfmm
-    import skfmm
+    try:
+        import skfmm
+    except ImportError:
+        print("Tracheal distance calculation requires scikit-fmm to be installed. Please execute "
+              "`pip install scikit-fmm`.")
+        sys.exit(1)
 
     # Obtain median threshold
     lung_threshold = np.median(scan.voxels[lung_segmentation])
