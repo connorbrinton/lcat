@@ -26,11 +26,7 @@ def get_tracheal_distances(scan, lung_segmentation):
     phi = np.ma.MaskedArray(seed_boundary, air_boundaries)
 
     # Perform fast marching problem
-    try:
-        distances = skfmm.distance(phi)
-    except:
-        import IPython
-        IPython.embed()
+    distances = skfmm.distance(phi)
 
     # TODO: Return something else?
     return distances

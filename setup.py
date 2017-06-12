@@ -13,18 +13,16 @@ PACKAGE_DIR = {}
 
 PACKAGE_DATA = {}
 
-SCRIPTS = ['scripts/test_bronchi.py',
-           'scripts/test_loading.py',
-           'scripts/test_lung.py',
-           'scripts/featurize.py']
+SCRIPTS = ['scripts/lcat-featurize.py',
+           'scripts/lcat-visualize.py']
 
-setup(name='lcat-toolkit',
+setup(name='lcat',
       version='0.1.0',
       description='Lung Cancer Action Team (LCAT) toolkit',
       author='LCAT Team',
       author_email='lcat-toolkit@mail.stanford.edu',
-      url='https://bitbucket.org/connorbrinton/bmi260-lcat-code',
-      license='Unlicensed',
+      url='https://github.com/connorbrinton/lcat',
+      license='GPL-3.0',
       package_data=PACKAGE_DATA,
       package_dir=PACKAGE_DIR,
       packages=PACKAGES,

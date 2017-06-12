@@ -102,3 +102,6 @@ ENV/
 
 # Ignore featurization folder
 /featurization/
+
+# Ignore visualization folder
+/visualization/

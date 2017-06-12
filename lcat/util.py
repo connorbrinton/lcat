@@ -65,6 +65,7 @@ def save_slices(voxels, destination_folder, prefix="slice"):
         destination_filepath = os.path.join(destination_folder, filename_template % (z_index))
         scipy.misc.imsave(destination_filepath, voxels[..., z_index])
 
+
 def get_bounding_box(arr):
     """
     Given an array of values, returns an list of tuples, where each tuple represents the extent of
@@ -170,3 +171,24 @@ def clear_border(labels, axis=None, in_place=False):
         labels[labels == value] = 0
 
     return labels
+
+
+def image_from_mask(mask):
+    """
+    Convert a binary mask into a PIL image.
+    """
+    # Import PIL (if necessary)
+    import PIL
+
+    # Create mask image
+    mask_image = PIL.Image.new('1', mask.shape)
+
+    # Reserve memory for pixels
+    pixels = mask_image.load()
+
+    # Store pixel values
+    for i in range(mask_image.size[0]):
+        for j in range(mask_image.size[1]):
+            pixels[i, j] = int(mask[i, j])
+
+    return mask_image
